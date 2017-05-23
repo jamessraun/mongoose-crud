@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/jamessraun/mongoose-crud/issues"
   },
-  "homepage": "https://github.com/jamessraun/mongoose-crud#readme"
+  "homepage": "https://github.com/jamessraun/mongoose-crud#readme",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "mongoose": "^4.10.2"
+  }
 }
