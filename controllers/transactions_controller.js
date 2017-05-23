@@ -1,72 +1,109 @@
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/library');
 var Transaction = require('../models/transaction')
+var Book = require('../models/book')
 var calculate_date = require('../helpers/calculate_date')
 var calculate_fine = require('../helpers/calculate_fine')
 
 
-var getAllTransactions = (req,res) => {
-    Transaction.find().populate('booklist').exec((err,transactions) => {
+var getAllTransactions = (req, res) => {
 
-      console.log(transactions);
-      res.send(transactions)
-    })
+  Transaction.find().populate('booklist').exec((err, transactions) => {
+    res.send(transactions)
+  })
+
 }
 
-var createTransaction = (req,res) => {
+var createTransaction = (req, res) => {
 
-    let arrSplit = req.body.booklist.split(',')
-    console.log(arrSplit);
-    var resultDate = calculate_date(req.body.days)
-    console.log(resultDate);
-    var date = new Date(resultDate)
+  let booksId = req.body.booklist.split(',')
+  let date = calculate_date(req.body.days)
 
-    transactions = {
-      memberid:req.body.memberid,
-      days:req.body.days,
-      out_date:new Date(),
-      due_date:date,
-      booklist:arrSplit
-    }
+  let transactions = {
+    memberid: req.body.memberid,
+    days: req.body.days,
+    out_date: new Date(),
+    due_date: date,
+    booklist: booksId
+  }
 
-    Transaction.create(transactions,(err,trans) => {
-      res.send(trans)
+  //reducing books' stock
+  for(let i=0;i<booksId.length;i++){
+    Book.findById(booksId[i],(err, result) => {
+      if (err) res.send(err)
+      if(+result.stock!==0){
+        result.stock=+result.stock-1
+        result.save((err, updateBook) => {
+          if (err) res.send(err);
+          else{
+            Transaction.create(transactions, (err, trans) => {
+              if(err) res.send(err)
+              if(i===booksId.length-1)
+              res.send(trans)
+            })
+          }
+        });
+      }else {
+        res.send({message:'out of stock'})
+        i=booksId.length;
+      }
     })
+  }
+  //end of reducing books' stock
+
 }
 
-var updateTransaction = (req,res) => {
-  Transaction.findById(req.params.id,(err,result) => {
-    if (err)
-    res.send(err)
+var updateTransaction = (req, res) => {
+  Transaction.findById(req.params.id, (err, result) => {
+
+    let booksId = result.booklist
+
+    if (err) res.send(err)
 
     let fine = calculate_fine(result.due_date);
-    console.log(fine);
     result.in_date = new Date()
     result.fine = fine
-    result.save( (err, updatedtransaction) => {
+
+    //increasing books' stock
+      for(let i=0;i<booksId.length;i++){
+        Book.findById(booksId[i],(err, result) => {
+          if (err) res.send(err)
+            result.stock=+result.stock+1
+            result.save((err, updateBook) => {
+              if (err) res.send(err);
+            });
+        })
+      }
+      //end of increasing books' stock
+
+    result.save((err, updatedtransaction) => {
       if (err) res.send(err);
       res.send(updatedtransaction);
     });
-  });
+
+  })
 }
 
+var deleteTransaction = (req, res) => {
 
-var deleteTransaction = (req,res) => {
-  Transaction.findById(req.params.id,(err, transaction) => {
+  Transaction.findById(req.params.id, (err, transaction) => {
 
     if (err) res.send(err);
+
     transaction.remove((err, message) => {
+
       if (err) res.send(err);
       res.send(message);
+
     });
   });
-}
 
+}
 
 
 module.exports = {
-  getAllTransactions,
-  createTransaction,
-  updateTransaction,
-  deleteTransaction
+  getAllTransactions:getAllTransactions,
+  createTransaction:createTransaction,
+  updateTransaction:updateTransaction,
+  deleteTransaction:deleteTransaction
 };

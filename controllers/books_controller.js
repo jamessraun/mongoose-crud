@@ -47,8 +47,8 @@ var deleteBook = (req,res) => {
 
 
 module.exports = {
-  getAllBooks,
-  createBook,
-  updateBook,
-  deleteBook
+  getAllBooks:getAllBooks,
+  createBook:createBook,
+  updateBook:updateBook,
+  deleteBook:deleteBook
 };

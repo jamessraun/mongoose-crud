@@ -47,8 +47,8 @@ var deleteCustomer = (req,res) => {
 
 
 module.exports = {
-  getAllCustomers,
-  createCustomer,
-  updateCustomer,
-  deleteCustomer
+  getAllCustomers:getAllCustomers,
+  createCustomer:createCustomer,
+  updateCustomer:updateCustomer,
+  deleteCustomer:deleteCustomer
 };
