@@ -2,9 +2,9 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var transactionSchema = new Schema({
-  memberid:String,
-  name: String,
-  days: Number,
+  memberid:{type:String,required:true,unique:true},
+  name: {type:String,required:true},
+  days: {type:Number,required:true},
   out_date: Date,
   due_date: Date,
   in_date: Date,

@@ -9,7 +9,7 @@ var calculate_fine = require('../helpers/calculate_fine')
 var getAllTransactions = (req, res) => {
 
   Transaction.find().populate('booklist').exec((err, transactions) => {
-    res.send(transactions)
+    res.json(transactions)
   })
 
 }
@@ -30,21 +30,21 @@ var createTransaction = (req, res) => {
   //reducing books' stock
   for(let i=0;i<booksId.length;i++){
     Book.findById(booksId[i],(err, result) => {
-      if (err) res.send(err)
+      if (err) res.json(err)
       if(+result.stock!==0){
         result.stock=+result.stock-1
         result.save((err, updateBook) => {
-          if (err) res.send(err);
+          if (err) res.json(err);
           else{
             Transaction.create(transactions, (err, trans) => {
-              if(err) res.send(err)
+              if(err) res.json(err)
               if(i===booksId.length-1)
-              res.send(trans)
+              res.json(trans)
             })
           }
         });
       }else {
-        res.send({message:'out of stock'})
+        res.json({message:'out of stock'})
         i=booksId.length;
       }
     })
@@ -58,7 +58,7 @@ var updateTransaction = (req, res) => {
 
     let booksId = result.booklist
 
-    if (err) res.send(err)
+    if (err) res.json(err)
 
     let fine = calculate_fine(result.due_date);
     result.in_date = new Date()
@@ -67,18 +67,18 @@ var updateTransaction = (req, res) => {
     //increasing books' stock
       for(let i=0;i<booksId.length;i++){
         Book.findById(booksId[i],(err, result) => {
-          if (err) res.send(err)
+          if (err) res.json(err)
             result.stock=+result.stock+1
             result.save((err, updateBook) => {
-              if (err) res.send(err);
+              if (err) res.json(err);
             });
         })
       }
       //end of increasing books' stock
 
     result.save((err, updatedtransaction) => {
-      if (err) res.send(err);
-      res.send(updatedtransaction);
+      if (err) res.json(err);
+      res.json(updatedtransaction);
     });
 
   })
@@ -88,12 +88,12 @@ var deleteTransaction = (req, res) => {
 
   Transaction.findById(req.params.id, (err, transaction) => {
 
-    if (err) res.send(err);
+    if (err) res.json(err);
 
     transaction.remove((err, message) => {
 
-      if (err) res.send(err);
-      res.send(message);
+      if (err) res.json(err);
+      res.json(message);
 
     });
   });
