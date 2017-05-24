@@ -1,9 +1,9 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose')
+  , Transaction = require('../models/transaction')
+  , Book = require('../models/book')
+  , calculate_date = require('../helpers/calculate_date')
+  , calculate_fine = require('../helpers/calculate_fine')
 mongoose.connect('mongodb://localhost/library');
-var Transaction = require('../models/transaction')
-var Book = require('../models/book')
-var calculate_date = require('../helpers/calculate_date')
-var calculate_fine = require('../helpers/calculate_fine')
 
 
 var getAllTransactions = (req, res) => {

@@ -1,12 +1,17 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var mongoose = require('mongoose')
+  , Schema = mongoose.Schema;
+
+
+var matchMemberId = [/CL\d{4}/,'ivalid memberid!']
+   ,matchPhone = [/^\d{10,12}$/,'invalid phone number!']
+   ,matchName = [/^[a-z ,.'-]+$/,'invalid name!']
 
 var customerSchema = new Schema({
-  name: String,
-  memberid: {type:String,required:true,unique:true},
+  name: {type:String,match:matchName},
+  memberid: {type:String,required:true,unique:true,match:matchMemberId},
   address: String,
   zipcode: String,
-  phone: String,
+  phone: {type:String,match:matchPhone},
 });
 
 var Customer = mongoose.model('Customer', customerSchema);

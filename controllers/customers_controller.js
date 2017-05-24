@@ -12,7 +12,7 @@ var getAllCustomers = (req,res) => {
 var createCustomer = (req,res) => {
     customer.create(req.body,(err,customers) => {
 
-      if(err) res.json({message:'validation failed'})
+      if(err) res.json(err) //({message:'validation failed'})
       else res.json(customers)
 
     })

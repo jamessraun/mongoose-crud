@@ -1,6 +1,7 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose')
+  , Book = require('../models/book')
 mongoose.connect('mongodb://localhost/library');
-var Book = require('../models/book')
+
 
 
 var getAllBooks = (req,res) => {
